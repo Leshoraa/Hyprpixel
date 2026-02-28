@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   margin: 0;
   padding: 0;
@@ -129,8 +130,10 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: 70vh;
+  max-height: 55vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }

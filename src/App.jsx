@@ -8,7 +8,7 @@ const DEFAULT_CONFIG = {
   brightness: 1,
   contrast: 1.2,
   ratio: 'fullscreen',
-  mirror: true,
+  mirror: false,
   zoom: 1,
   temperature: 0,
   tint: 0,
@@ -77,7 +77,12 @@ function App() {
   };
 
   const toggleCamera = () => {
-    setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+    setFacingMode((prev) => {
+      const newMode = prev === 'environment' ? 'user' : 'environment';
+      // Automatically toggle mirror based on camera direction
+      setConfig(c => ({ ...c, mirror: newMode === 'user' }));
+      return newMode;
+    });
   };
 
   const onCaptureReady = useCallback((fn) => {
@@ -153,10 +158,20 @@ function App() {
       if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
         isMoved.current = true;
       }
-      setPanelPos({
-        x: dragStartPos.current.x + dx,
-        y: dragStartPos.current.y + dy
-      });
+
+      // Calculate new positions
+      let newX = dragStartPos.current.x + dx;
+      let newY = dragStartPos.current.y + dy;
+
+      // Screen boundaries constraints
+      const maxX = window.innerWidth / 2 - 20;
+      const maxY = window.innerHeight - 100;
+
+      // Clamp values
+      newX = Math.max(-maxX, Math.min(maxX, newX));
+      newY = Math.max(-maxY, Math.min(200, newY)); // allow dragging down more than up
+
+      setPanelPos({ x: newX, y: newY });
     }
   };
 
