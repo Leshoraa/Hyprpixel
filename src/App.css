@@ -1,3 +1,20 @@
+:root {
+  --bg: #111111;
+  --panel-bg: rgba(15, 15, 15, 0.7);
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0a0;
+
+  /* Dynamic Theme Accents */
+  --accent-cam: #ffb3ba;
+  --accent-color: #e0b0ff;
+  --accent-light: #ffffba;
+  --accent-pixel: #bae1ff;
+  --accent-fx: #baffc9;
+
+  --accent: var(--accent-cam);
+  /* Default */
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -8,7 +25,7 @@
   padding: 0;
   position: relative;
   overflow: hidden;
-  background-color: #000;
+  background-color: var(--bg);
 }
 
 .preview-wrapper {
@@ -51,7 +68,7 @@
   z-index: 20;
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 15px;
   align-items: center;
   padding: 0 20px;
   pointer-events: none;
@@ -62,11 +79,11 @@
 }
 
 .capture-circle-btn {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+  width: 86px;
+  height: 56px;
+  border-radius: 30px;
   background: transparent;
-  border: 4px solid #fff;
+  border: 2px solid #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,16 +93,17 @@
 }
 
 .capture-inner {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  width: 76px;
+  height: 46px;
+  border-radius: 23px;
   background: #fff;
   transition: all 0.2s ease;
 }
 
 .capture-circle-btn:active .capture-inner {
-  width: 48px;
-  height: 48px;
+  width: 68px;
+  height: 40px;
+  border-radius: 20px;
   background: var(--accent);
 }
 
@@ -159,7 +177,7 @@
 
 .controls-panel.interacting .control-header,
 .controls-panel.interacting .panel-handle,
-.controls-panel.interacting .hidden-group,
+.controls-panel.interacting .tabs-container,
 .controls-panel.interacting .control-group:not(.active-group) {
   opacity: 0;
   pointer-events: none;
@@ -248,6 +266,26 @@
   color: #000;
 }
 
+.tab-theme-camera {
+  --accent: var(--accent-cam);
+}
+
+.tab-theme-color {
+  --accent: var(--accent-color);
+}
+
+.tab-theme-light {
+  --accent: var(--accent-light);
+}
+
+.tab-theme-pixel {
+  --accent: var(--accent-pixel);
+}
+
+.tab-theme-fx {
+  --accent: var(--accent-fx);
+}
+
 .error-message {
   color: #f85149;
   text-align: center;
@@ -278,7 +316,7 @@
 }
 
 .tab-btn.active {
-  background: #ffffff;
+  background: var(--accent);
   color: #000000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
@@ -338,4 +376,128 @@ input[type="color"]::-webkit-color-swatch {
 input[type="color"]::-moz-color-swatch {
   border: none;
   border-radius: 50%;
+}
+
+/* ---------- NEW UI FEATURES ---------- */
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.grid-hline {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.grid-vline {
+  position: absolute;
+  height: 100%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.timer-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 15vw;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  z-index: 15;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.checkbox-label:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.checkbox-label.monochrome input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-label.monochrome .chk-box {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  display: inline-block;
+  position: relative;
+  transition: all 0.1s;
+}
+
+.checkbox-label.monochrome input[type="checkbox"]:checked+.chk-box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.checkbox-label.monochrome input[type="checkbox"]:checked+.chk-box::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.preset-select {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.preset-select:focus {
+  border-color: var(--accent);
+}
+
+.preset-select option {
+  background: #1a1a1a;
+  color: #fff;
 }

@@ -2,15 +2,16 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useCamera } from '../hooks/useCamera';
 import { processPixelArt } from '../utils/pixelProcessor';
 
-export const CameraPreview = ({ config, onCaptureReady, facingMode }) => {
-    const { stream, error, videoRef } = useCamera(facingMode);
+export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImage }) => {
+    const { stream, error, videoRef } = useCamera(facingMode, config.flashlight);
     const canvasRef = useRef(null);
     const animationFrameId = useRef(null);
     const [isVideoReady, setIsVideoReady] = useState(false);
+    const lastFrameTime = useRef(0);
 
     useEffect(() => {
         const video = videoRef.current;
-        if (video) {
+        if (video && !importedImage) {
             // Reset ready state when stream changes
             setIsVideoReady(false);
             video.onloadedmetadata = () => {
@@ -18,18 +19,65 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode }) => {
                 setIsVideoReady(true);
             };
         }
-    }, [videoRef, stream]);
+    }, [videoRef, stream, importedImage]);
 
     useEffect(() => {
-        const video = videoRef.current;
         const canvas = canvasRef.current;
-
-        if (!video || !canvas || !isVideoReady) return;
+        if (!canvas) return;
 
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+        // Logic for Static Imported Image
+        if (importedImage) {
+            const img = new Image();
+            img.onload = () => {
+                let canvasW = img.width;
+                let canvasH = img.height;
+                const activeRatio = config.ratio || 'fullscreen';
+
+                if (activeRatio !== 'fullscreen') {
+                    const [targetW, targetH] = activeRatio.split(':').map(Number);
+                    const targetRatio = targetW / targetH;
+                    if (canvasW / canvasH > targetRatio) {
+                        canvasW = Math.round(canvasH * targetRatio);
+                    } else {
+                        canvasH = Math.round(canvasW / targetRatio);
+                    }
+                }
+
+                if (canvas.width !== canvasW || canvas.height !== canvasH) {
+                    canvas.width = canvasW;
+                    canvas.height = canvasH;
+                }
+
+                // Process pixel art once for static image
+                processPixelArt(img, ctx, canvas.width, canvas.height, config);
+            };
+            img.src = importedImage;
+
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
+            return;
+        }
+
+        const video = videoRef.current;
+        if (!video || !isVideoReady) return;
+
         const renderLoop = () => {
+            animationFrameId.current = requestAnimationFrame(renderLoop);
+
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                // FPS Limiter Logic
+                if (config.fpsLimit && config.fpsLimit > 0) {
+                    const now = Date.now();
+                    const dt = now - lastFrameTime.current;
+                    const frameDuration = 1000 / config.fpsLimit;
+
+                    if (dt < frameDuration) return; // Skip frame
+                    lastFrameTime.current = now - (dt % frameDuration);
+                }
+
                 let canvasW = video.videoWidth;
                 let canvasH = video.videoHeight;
                 const activeRatio = config.ratio || 'fullscreen';
@@ -52,7 +100,6 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode }) => {
 
                 processPixelArt(video, ctx, canvas.width, canvas.height, config);
             }
-            animationFrameId.current = requestAnimationFrame(renderLoop);
         };
 
         renderLoop();
@@ -62,7 +109,7 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode }) => {
                 cancelAnimationFrame(animationFrameId.current);
             }
         };
-    }, [isVideoReady, config, videoRef]);
+    }, [isVideoReady, config, videoRef, importedImage]);
 
     useEffect(() => {
         if (onCaptureReady && canvasRef.current) {
