@@ -14,13 +14,13 @@ export const CameraTab = ({
             <div className={`control-group ${activeSlider ? 'hidden-group' : ''}`}>
                 <label>Ratio</label>
                 <div className="ratio-selector">
-                    {['fullscreen', '9:16', '16:9', '3:4', '4:3', '1:1'].map((r) => (
+                    {['fullscreen', 'original', '9:16', '16:9', '3:4', '4:3', '1:1'].map((r) => (
                         <button
                             key={r}
                             className={`ratio-btn ${config.ratio === r ? 'active' : ''}`}
                             onClick={() => setConfig(prev => ({ ...prev, ratio: r }))}
                         >
-                            {r === 'fullscreen' ? 'Full' : r}
+                            {r === 'fullscreen' ? 'Full' : (r === 'original' ? 'Asli' : r)}
                         </button>
                     ))}
                 </div>

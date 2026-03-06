@@ -25,6 +25,8 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   let targetRatio;
   if (activeRatio === 'fullscreen') {
     targetRatio = window.innerWidth / window.innerHeight;
+  } else if (activeRatio === 'original') {
+    targetRatio = sw / sh; // Use video's original ratio
   } else {
     const [targetW, targetH] = activeRatio.split(':').map(Number);
     targetRatio = targetW / targetH;
@@ -32,12 +34,14 @@ export const processPixelArt = (video, ctx, width, height, config) => {
 
   const videoRatio = sw / sh;
 
-  if (videoRatio > targetRatio) {
-    sw = sh * targetRatio;
-    sx = ((video.videoWidth || video.width) - sw) / 2;
-  } else {
-    sh = sw / targetRatio;
-    sy = ((video.videoHeight || video.height) - sh) / 2;
+  if (activeRatio !== 'original') {
+    if (videoRatio > targetRatio) {
+      sw = sh * targetRatio;
+      sx = ((video.videoWidth || video.width) - sw) / 2;
+    } else {
+      sh = sw / targetRatio;
+      sy = ((video.videoHeight || video.height) - sh) / 2;
+    }
   }
 
   // Apply Digital Zoom

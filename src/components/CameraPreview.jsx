@@ -38,15 +38,19 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImag
 
                 if (activeRatio === 'fullscreen') {
                     targetRatio = window.innerWidth / window.innerHeight;
+                } else if (activeRatio === 'original') {
+                    targetRatio = canvasW / canvasH;
                 } else {
                     const [targetW, targetH] = activeRatio.split(':').map(Number);
                     targetRatio = targetW / targetH;
                 }
 
-                if (canvasW / canvasH > targetRatio) {
-                    canvasW = Math.round(canvasH * targetRatio);
-                } else {
-                    canvasH = Math.round(canvasW / targetRatio);
+                if (activeRatio !== 'original') {
+                    if (canvasW / canvasH > targetRatio) {
+                        canvasW = Math.round(canvasH * targetRatio);
+                    } else {
+                        canvasH = Math.round(canvasW / targetRatio);
+                    }
                 }
 
                 if (canvas.width !== canvasW || canvas.height !== canvasH) {
@@ -89,15 +93,19 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImag
 
                 if (activeRatio === 'fullscreen') {
                     targetRatio = window.innerWidth / window.innerHeight;
+                } else if (activeRatio === 'original') {
+                    targetRatio = canvasW / canvasH;
                 } else {
                     const [targetW, targetH] = activeRatio.split(':').map(Number);
                     targetRatio = targetW / targetH;
                 }
 
-                if (canvasW / canvasH > targetRatio) {
-                    canvasW = Math.round(canvasH * targetRatio);
-                } else {
-                    canvasH = Math.round(canvasW / targetRatio);
+                if (activeRatio !== 'original') {
+                    if (canvasW / canvasH > targetRatio) {
+                        canvasW = Math.round(canvasH * targetRatio);
+                    } else {
+                        canvasH = Math.round(canvasW / targetRatio);
+                    }
                 }
 
                 if (canvas.width !== canvasW || canvas.height !== canvasH) {
