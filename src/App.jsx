@@ -3,7 +3,7 @@ import { CameraPreview } from './components/CameraPreview';
 import './App.css';
 
 const DEFAULT_CONFIG = {
-  pixelSize: 2,
+  pixelSize: 5,
   colorColors: 8,
   brightness: 1,
   contrast: 1.2,
@@ -21,7 +21,7 @@ const DEFAULT_CONFIG = {
   tints: [{ color: '#ffffff', intensity: 0 }],
 
   hdr: 0,
-  palette: 'none',
+  palette: 'default_cam',
   ditherMode: 'bayer4x4',
   crt: false,
   scanlines: 0,
@@ -632,6 +632,12 @@ function App() {
               <label>Palette</label>
               <select value={config.palette} onChange={(e) => setConfig(p => ({ ...p, palette: e.target.value }))} className="preset-select">
                 <option value="none">None</option>
+                <option value="default_cam">DEFAULT</option>
+                <option value="midnight7">7MDNIGHT</option>
+                <option value="ammo8">8AMMO</option>
+                <option value="autumn8">8AUTUMN</option>
+                <option value="brkfst8">8BRKFST</option>
+                <option value="dream8">8DREAM</option>
                 <option value="catppuccin">Catppuccin (Mocha)</option>
                 <option value="dracula">Dracula</option>
                 <option value="onedark">One Dark (Atom)</option>

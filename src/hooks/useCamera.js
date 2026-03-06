@@ -28,7 +28,6 @@ export const useCamera = (facingMode = 'environment', flashlight = false) => {
                     videoRef.current.srcObject = currentStream;
                 }
 
-                // Try applying flashlight if requested initially
                 if (flashlight && track && track.getCapabilities && track.getCapabilities().torch) {
                     await track.applyConstraints({
                         advanced: [{ torch: true }]
