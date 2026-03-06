@@ -199,28 +199,6 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   };
 
   const PALETTES = {
-    catppuccin: [[30, 30, 46], [24, 24, 37], [205, 214, 244], [245, 194, 231], [203, 166, 247], [243, 139, 168], [250, 179, 135], [249, 226, 175], [166, 227, 161], [148, 226, 213], [137, 180, 250]],
-    dracula: [[40, 42, 54], [68, 71, 90], [248, 248, 242], [139, 233, 253], [80, 250, 123], [255, 184, 108], [255, 121, 198], [189, 147, 249], [255, 85, 85], [241, 250, 140]],
-    onedark: [[40, 44, 52], [171, 178, 191], [224, 108, 117], [190, 80, 70], [152, 195, 121], [229, 192, 123], [97, 175, 239], [198, 120, 221], [86, 182, 194]],
-    nord: [[46, 52, 64], [76, 86, 106], [236, 239, 244], [136, 192, 208], [94, 129, 172], [191, 97, 106], [235, 203, 139], [163, 190, 140], [180, 142, 173]],
-    gruvbox: [[40, 40, 40], [235, 219, 178], [204, 36, 29], [152, 151, 26], [215, 153, 33], [69, 133, 136], [177, 98, 134], [104, 157, 106], [214, 93, 14]],
-    tokyonight: [[26, 27, 38], [192, 202, 245], [125, 207, 255], [122, 162, 247], [187, 154, 247], [247, 118, 142], [255, 158, 100], [224, 175, 104], [158, 206, 106]],
-    rosepine: [[25, 23, 36], [31, 29, 46], [224, 222, 244], [235, 188, 186], [246, 193, 119], [156, 207, 216], [196, 167, 231]],
-    everforest: [[43, 51, 57], [211, 198, 170], [230, 126, 128], [167, 192, 128], [219, 188, 127], [127, 187, 179], [214, 153, 182]],
-    solarized: [[0, 43, 54], [7, 54, 66], [253, 246, 227], [238, 232, 213], [181, 137, 0], [203, 75, 22], [220, 50, 47], [211, 54, 130], [108, 113, 196], [38, 139, 210], [42, 161, 152], [133, 153, 0]],
-    synthwave: [[43, 33, 58], [36, 27, 47], [255, 126, 219], [254, 68, 80], [255, 140, 0], [255, 232, 115], [54, 249, 246], [23, 178, 255]],
-    sweetpastel: [[255, 179, 186], [255, 223, 186], [255, 255, 186], [186, 255, 201], [186, 225, 255], [220, 208, 255], [255, 255, 255]],
-    matcha: [[236, 243, 232], [198, 223, 186], [159, 191, 148], [131, 166, 119], [90, 122, 80], [66, 94, 57], [45, 69, 38]],
-    candycotton: [[241, 208, 226], [228, 193, 249], [208, 210, 249], [169, 222, 249], [202, 240, 248], [253, 240, 213]],
-    sunset: [[42, 27, 61], [116, 40, 84], [180, 63, 94], [234, 105, 92], [250, 164, 118], [255, 214, 153]],
-    monokai: [[39, 40, 34], [248, 248, 242], [249, 38, 114], [253, 151, 31], [230, 219, 116], [166, 226, 46], [102, 217, 239], [174, 129, 255]],
-    horizon: [[28, 30, 38], [35, 37, 48], [250, 200, 99], [223, 82, 134], [38, 187, 217], [89, 233, 178], [190, 140, 250]],
-    palenight: [[41, 45, 62], [130, 170, 255], [199, 146, 234], [137, 221, 255], [240, 113, 120], [255, 203, 107], [195, 232, 141], [255, 83, 112]],
-    kanagawa: [[31, 31, 40], [220, 215, 186], [195, 64, 67], [118, 148, 106], [192, 163, 110], [126, 156, 216], [149, 127, 184], [106, 149, 137]],
-    vaporwave: [[255, 113, 206], [1, 205, 254], [5, 255, 161], [185, 103, 255], [255, 251, 150], [42, 34, 74]],
-    cyberpunk: [[253, 234, 46], [243, 85, 136], [5, 217, 232], [26, 224, 152], [54, 46, 126], [21, 14, 25]],
-    gameboy: [[15, 56, 15], [48, 98, 48], [139, 172, 15], [155, 188, 15]],
-    cga: [[0, 0, 0], [85, 255, 255], [255, 85, 255], [255, 255, 255]],
     default_cam: [[203, 210, 182], [185, 160, 125], [180, 115, 95], [105, 95, 85], [70, 80, 80], [45, 55, 55]],
     midnight7: [[250, 175, 160], [235, 100, 120], [175, 45, 95], [105, 20, 65], [60, 15, 55], [35, 10, 35], [15, 5, 20], [5, 5, 10]],
     ammo8: [[25, 30, 25], [35, 50, 45], [55, 80, 65], [90, 110, 95], [125, 150, 115], [175, 195, 135], [215, 225, 180], [240, 245, 225]],
@@ -277,15 +255,25 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   const rxOffset = vhsDistortion > 0;
   const srcData = (caOffset > 0 || edgeDetection || glitchMode || rxOffset || colorBleed > 0) ? new Uint8ClampedArray(data) : data;
 
+  // Pre-calculations for performance optimization
+  const baseVhsShift = vhsDistortion > 0 ? performance.now() * 0.01 : 0;
+  const chromaThresholdAbs = chromaKeyThreshold * 255;
+  const hasChromaKey = chromaKeyThreshold > 0;
+  const cb10 = Math.floor(colorBleed * 10);
+  const etFloor = Math.floor(edgeThickness);
+  const etCeil = Math.ceil(edgeThickness);
+  const hasEdgeDetection = edgeDetection;
+
   for (let y = 0; y < h; y++) {
+    const yVhsShift = vhsDistortion > 0 ? Math.floor(Math.sin(y * 0.1 + baseVhsShift) * vhsDistortion * 20) : 0;
+
     for (let x = 0; x < w; x++) {
       const i = (y * w + x) * 4;
 
       // VHS Distortion Shift
       let srcX = x;
       if (vhsDistortion > 0) {
-        const shift = Math.floor(Math.sin(y * 0.1 + performance.now() * 0.01) * vhsDistortion * 20);
-        srcX = Math.min(w - 1, Math.max(0, x + shift));
+        srcX = Math.min(w - 1, Math.max(0, x + yVhsShift));
       }
 
       // Chromatic Aberration & Data Bending Glitch
@@ -298,8 +286,8 @@ export const processPixelArt = (video, ctx, width, height, config) => {
         let maxOffset = caOffset;
         if (glitchMode && Math.random() > 0.98) maxOffset += Math.floor(Math.random() * 20); // random tearing
 
-        const leftI = (y * w + Math.max(0, srcX - maxOffset - Math.floor(colorBleed * 10))) * 4;
-        const rightI = (y * w + Math.min(w - 1, srcX + maxOffset + Math.floor(colorBleed * 10))) * 4;
+        const leftI = (y * w + Math.max(0, srcX - maxOffset - cb10)) * 4;
+        const rightI = (y * w + Math.min(w - 1, srcX + maxOffset + cb10)) * 4;
         r = srcData[leftI];
         b = srcData[rightI + 2];
 
@@ -309,10 +297,9 @@ export const processPixelArt = (video, ctx, width, height, config) => {
       }
 
       // Chroma Key (Green Screen)
-      if (chromaKeyThreshold > 0) {
+      if (hasChromaKey) {
         const dR = r - ckC.r, dG = g - ckC.g, dB = b - ckC.b;
-        const dist = Math.sqrt(dR * dR + dG * dG + dB * dB);
-        if (dist < chromaKeyThreshold * 255) {
+        if (dR * dR + dG * dG + dB * dB < chromaThresholdAbs * chromaThresholdAbs) {
           r = crC.r; g = crC.g; b = crC.b;
         }
       }
@@ -334,9 +321,9 @@ export const processPixelArt = (video, ctx, width, height, config) => {
       }
 
       // Edge Detection (Sobel Approx)
-      if (edgeDetection && srcX > Math.floor(edgeThickness) && y > Math.floor(edgeThickness) && srcX < w - Math.ceil(edgeThickness) && y < h - Math.ceil(edgeThickness)) {
-        const t = (y - Math.ceil(edgeThickness)) * w * 4 + srcX * 4;
-        const l = y * w * 4 + (srcX - Math.ceil(edgeThickness)) * 4;
+      if (hasEdgeDetection && srcX > etFloor && y > etFloor && srcX < w - etCeil && y < h - etCeil) {
+        const t = (y - etCeil) * w * 4 + srcX * 4;
+        const l = y * w * 4 + (srcX - etCeil) * 4;
         const cLuma = 0.3 * r + 0.59 * g + 0.11 * b;
         const tLuma = 0.3 * srcData[t] + 0.59 * srcData[t + 1] + 0.11 * srcData[t + 2];
         const lLuma = 0.3 * srcData[l] + 0.59 * srcData[l + 1] + 0.11 * srcData[l + 2];
@@ -351,15 +338,15 @@ export const processPixelArt = (video, ctx, width, height, config) => {
       }
 
       // Temperature & Tint
-      r = Math.min(255, Math.max(0, r + tempBoostR + tintBoostP));
-      g = Math.min(255, Math.max(0, g + tintBoostG));
-      b = Math.min(255, Math.max(0, b + tempBoostB + tintBoostP));
+      r = Math.min(255, Math.max(0, r + tempBoostR + tintBoostP)) | 0;
+      g = Math.min(255, Math.max(0, g + tintBoostG)) | 0;
+      b = Math.min(255, Math.max(0, b + tempBoostB + tintBoostP)) | 0;
 
       // RGB Channel Shifts
       if (red !== 0 || green !== 0 || blue !== 0) {
-        r = Math.min(255, Math.max(0, r + red));
-        g = Math.min(255, Math.max(0, g + green));
-        b = Math.min(255, Math.max(0, b + blue));
+        r = Math.min(255, Math.max(0, r + red)) | 0;
+        g = Math.min(255, Math.max(0, g + green)) | 0;
+        b = Math.min(255, Math.max(0, b + blue)) | 0;
       }
 
       // Dominant Color Blending
@@ -498,9 +485,9 @@ export const processPixelArt = (video, ctx, width, height, config) => {
       }
 
       // Re-clamp
-      r = Math.min(255, Math.max(0, r));
-      g = Math.min(255, Math.max(0, g));
-      b = Math.min(255, Math.max(0, b));
+      r = r < 0 ? 0 : r > 255 ? 255 : r;
+      g = g < 0 ? 0 : g > 255 ? 255 : g;
+      b = b < 0 ? 0 : b > 255 ? 255 : b;
 
       // Dithering & Quantization
       let threshold = 0;

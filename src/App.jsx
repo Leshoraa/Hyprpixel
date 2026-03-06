@@ -631,35 +631,12 @@ function App() {
             <div className={`control-group ${activeSlider ? 'hidden-group' : ''}`}>
               <label>Palette</label>
               <select value={config.palette} onChange={(e) => setConfig(p => ({ ...p, palette: e.target.value }))} className="preset-select">
-                <option value="none">None</option>
                 <option value="default_cam">DEFAULT</option>
                 <option value="midnight7">7MDNIGHT</option>
                 <option value="ammo8">8AMMO</option>
                 <option value="autumn8">8AUTUMN</option>
                 <option value="brkfst8">8BRKFST</option>
                 <option value="dream8">8DREAM</option>
-                <option value="catppuccin">Catppuccin (Mocha)</option>
-                <option value="dracula">Dracula</option>
-                <option value="onedark">One Dark (Atom)</option>
-                <option value="nord">Nord</option>
-                <option value="gruvbox">Gruvbox</option>
-                <option value="tokyonight">Tokyo Night</option>
-                <option value="rosepine">Rosé Pine</option>
-                <option value="everforest">Everforest</option>
-                <option value="solarized">Solarized</option>
-                <option value="synthwave">Synthwave '84</option>
-                <option value="sweetpastel">Sweet Pastel</option>
-                <option value="candycotton">Cotton Candy</option>
-                <option value="matcha">Matcha Green</option>
-                <option value="sunset">Retro Sunset</option>
-                <option value="monokai">Monokai</option>
-                <option value="horizon">Horizon</option>
-                <option value="palenight">Palenight</option>
-                <option value="kanagawa">Kanagawa</option>
-                <option value="vaporwave">Vaporwave</option>
-                <option value="cyberpunk">Cyberpunk 2077</option>
-                <option value="gameboy">GameBoy Classic</option>
-                <option value="cga">CGA Graphics</option>
               </select>
             </div>
 
