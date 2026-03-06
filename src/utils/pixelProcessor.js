@@ -22,18 +22,22 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   let sw = video.videoWidth || video.width;
   let sh = video.videoHeight || video.height;
 
-  if (activeRatio !== 'fullscreen') {
+  let targetRatio;
+  if (activeRatio === 'fullscreen') {
+    targetRatio = window.innerWidth / window.innerHeight;
+  } else {
     const [targetW, targetH] = activeRatio.split(':').map(Number);
-    const targetRatio = targetW / targetH;
-    const videoRatio = sw / sh;
+    targetRatio = targetW / targetH;
+  }
 
-    if (videoRatio > targetRatio) {
-      sw = sh * targetRatio;
-      sx = ((video.videoWidth || video.width) - sw) / 2;
-    } else {
-      sh = sw / targetRatio;
-      sy = ((video.videoHeight || video.height) - sh) / 2;
-    }
+  const videoRatio = sw / sh;
+
+  if (videoRatio > targetRatio) {
+    sw = sh * targetRatio;
+    sx = ((video.videoWidth || video.width) - sw) / 2;
+  } else {
+    sh = sw / targetRatio;
+    sy = ((video.videoHeight || video.height) - sh) / 2;
   }
 
   // Apply Digital Zoom
