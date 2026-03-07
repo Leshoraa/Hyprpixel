@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
 export const usePanelDrag = (setShowControls) => {
     const [panelPos, setPanelPos] = useState({ x: 0, y: 0 });
@@ -51,9 +51,9 @@ export const usePanelDrag = (setShowControls) => {
         }
     };
 
-    const resetPosition = () => {
+    const resetPosition = useCallback(() => {
         setPanelPos({ x: 0, y: 0 });
-    };
+    }, []);
 
     return {
         panelPos,
