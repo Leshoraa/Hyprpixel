@@ -1,6 +1,7 @@
 export const processPixelArt = (video, ctx, width, height, config) => {
   const {
     pixelSize = 10, colorColors = 16, brightness = 1, contrast = 1, ratio = 'fullscreen', mirror = false, zoom = 1,
+    panX = 0, panY = 0,
     temperature = 0, tint = 0, saturation = 1, highlights = 0, shadows = 0,
     red = 0, green = 0, blue = 0, tintColor = '#ffffff', tintIntensity = 0,
     hdr = 0, palette = 'none', ditherMode = 'bayer4x4', crt = false, scanlines = 0, filmGrain = 0, vignette = 0,
@@ -44,9 +45,10 @@ export const processPixelArt = (video, ctx, width, height, config) => {
     }
   }
 
-  // Apply Digital Zoom
+  // Apply Digital Zoom and Pan Offset
   const zsw = sw / zoom, zsh = sh / zoom;
-  const zsx = sx + (sw - zsw) / 2, zsy = sy + (sh - zsh) / 2;
+  const zsx = sx + (sw - zsw) / 2 - panX; 
+  const zsy = sy + (sh - zsh) / 2 - panY;
 
   const w = Math.max(1, Math.floor(width / pixelSize));
   const h = Math.max(1, Math.floor(height / pixelSize));
@@ -71,15 +73,31 @@ export const processPixelArt = (video, ctx, width, height, config) => {
     tCtx.scale(-1, 1);
   }
 
-  // Draw Initial Source
+  const bgFilter = tCtx.filter;
+  tCtx.filter = (bgFilter !== 'none' ? bgFilter + ' ' : '') + 'blur(15px) brightness(0.5)';
+  
+  const bgRatio = sw / sh;
+  const canvasRatio = w / h;
+  let bgW = w, bgH = h, bgX = 0, bgY = 0;
+  
+  if (bgRatio > canvasRatio) {
+      bgW = h * bgRatio;
+      bgX = (w - bgW) / 2;
+  } else {
+      bgH = w / bgRatio;
+      bgY = (h - bgH) / 2;
+  }
+  
+  tCtx.drawImage(video, 0, 0, video.videoWidth || video.width, video.videoHeight || video.height, bgX, bgY, bgW, bgH);
+
+  tCtx.filter = bgFilter;
   tCtx.drawImage(video, zsx, zsy, zsw, zsh, 0, 0, w, h);
 
-  // Symmetry Mode Handling
   if (symmetry !== 'none') {
     const symCanvas = document.createElement('canvas');
     symCanvas.width = w; symCanvas.height = h;
     const sCtx = symCanvas.getContext('2d');
-    sCtx.drawImage(tempCanvas, 0, 0); // copy base
+    sCtx.drawImage(tempCanvas, 0, 0);
 
     if (symmetry === 'horizontal') {
       tCtx.save(); tCtx.translate(w, 0); tCtx.scale(-1, 1);
@@ -102,17 +120,11 @@ export const processPixelArt = (video, ctx, width, height, config) => {
     }
   }
 
-  // Double Exposure Overlay - Read from existing canvas before clear if persistent buffer needed
-  // Since we don't have a persistent state inside the pure function, we inject ghosting buffer on the canvas node directly
-  // handled at the very end.
-
   const imageData = tCtx.getImageData(0, 0, w, h);
   const data = imageData.data;
-
-  // Apply Sharpening (Simple 3x3 Convolution on lightness approximation)
   if (sharpen > 0) {
     const w4 = w * 4;
-    const amount = sharpen * 2; // strength multiplier
+    const amount = sharpen * 2;
     const original = new Uint8ClampedArray(data);
     for (let y = 1; y < h - 1; y++) {
       for (let x = 1; x < w - 1; x++) {

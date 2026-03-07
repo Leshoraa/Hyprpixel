@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export const useCamera = (facingMode = 'environment', flashlight = false) => {
+export const useCamera = (facingMode = 'environment', flashlight = false, enabled = true) => {
     const [stream, setStream] = useState(null);
     const [error, setError] = useState(null);
     const videoRef = useRef(null);
@@ -10,6 +10,10 @@ export const useCamera = (facingMode = 'environment', flashlight = false) => {
         let currentStream = null;
 
         const startCamera = async () => {
+            if (!enabled) {
+                setStream(null);
+                return;
+            }
             try {
                 if (currentStream) {
                     currentStream.getTracks().forEach(track => track.stop());
@@ -45,7 +49,7 @@ export const useCamera = (facingMode = 'environment', flashlight = false) => {
                 currentStream.getTracks().forEach(track => track.stop());
             }
         };
-    }, [facingMode]);
+    }, [facingMode, enabled]);
 
     useEffect(() => {
         const toggleTorch = async () => {

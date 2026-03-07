@@ -3,23 +3,34 @@ import { useCamera } from '../hooks/useCamera';
 import { processPixelArt } from '../utils/pixelProcessor';
 
 export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImage }) => {
-    const { stream, error, videoRef } = useCamera(facingMode, config.flashlight);
+    const { stream, error, videoRef } = useCamera(facingMode, config.flashlight, !importedImage);
     const canvasRef = useRef(null);
     const animationFrameId = useRef(null);
     const [isVideoReady, setIsVideoReady] = useState(false);
     const lastFrameTime = useRef(0);
 
+    // Zoom and Pan states for imported image
+    const [imgScale, setImgScale] = useState(1);
+    const [panX, setPanX] = useState(0);
+    const [panY, setPanY] = useState(0);
+    const isDragging = useRef(false);
+    const lastPointerPos = useRef({ x: 0, y: 0 });
+
     useEffect(() => {
         const video = videoRef.current;
-        if (video && !importedImage) {
-            // Reset ready state when stream changes
-            setIsVideoReady(false);
-            video.onloadedmetadata = () => {
+        if (video) {
+            if (video.readyState >= 1) {
                 video.play().catch(e => console.error("Playback failed", e));
                 setIsVideoReady(true);
-            };
+            } else {
+                setIsVideoReady(false);
+                video.onloadedmetadata = () => {
+                    video.play().catch(e => console.error("Playback failed", e));
+                    setIsVideoReady(true);
+                };
+            }
         }
-    }, [videoRef, stream, importedImage]);
+    }, [videoRef, stream]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -58,8 +69,15 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImag
                     canvas.height = canvasH;
                 }
 
-                // Process pixel art once for static image
-                processPixelArt(img, ctx, canvas.width, canvas.height, config);
+                const overriddenConfig = {
+                    ...config,
+                    zoom: config.zoom * imgScale,
+                    panX: panX,
+                    panY: panY
+                };
+
+                // Process pixel art once for static image (or triggered by interaction)
+                processPixelArt(img, ctx, canvas.width, canvas.height, overriddenConfig);
             };
             img.src = importedImage;
 
@@ -124,7 +142,7 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImag
                 cancelAnimationFrame(animationFrameId.current);
             }
         };
-    }, [isVideoReady, config, videoRef, importedImage]);
+    }, [isVideoReady, config, videoRef, importedImage, imgScale, panX, panY]); // Added imgScale, pan, zoom deps so imported Image re-renders when interact
 
     useEffect(() => {
         if (onCaptureReady && canvasRef.current) {
@@ -138,8 +156,73 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImag
         return <div className="error-message">Error: {error}</div>;
     }
 
+    const handlePointerDown = (e) => {
+        if (!importedImage) return;
+        isDragging.current = true;
+        lastPointerPos.current = { x: e.clientX, y: e.clientY };
+        e.target.setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e) => {
+        if (!importedImage || !isDragging.current) return;
+        const dx = e.clientX - lastPointerPos.current.x;
+        const dy = e.clientY - lastPointerPos.current.y;
+        
+        // Adding dx and dy makes the offset track the mouse exactly
+        setPanX(prev => prev + dx * 2); 
+        setPanY(prev => prev + dy * 2);
+        
+        lastPointerPos.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const handlePointerUp = (e) => {
+        if (!importedImage) return;
+        isDragging.current = false;
+        e.target.releasePointerCapture(e.pointerId);
+    };
+
+    const handleWheel = (e) => {
+        if (!importedImage) return;
+        e.preventDefault();
+        const zoomSpeed = 0.05;
+        const delta = e.deltaY > 0 ? -zoomSpeed : zoomSpeed;
+        setImgScale(prev => Math.max(0.1, prev + delta));
+    };
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const preventDefault = (e) => {
+            if (importedImage) {
+                e.preventDefault();
+            }
+        };
+
+        container.addEventListener('wheel', preventDefault, { passive: false });
+        container.addEventListener('touchmove', preventDefault, { passive: false });
+        container.addEventListener('touchstart', preventDefault, { passive: false });
+
+        return () => {
+            container.removeEventListener('wheel', preventDefault);
+            container.removeEventListener('touchmove', preventDefault);
+            container.removeEventListener('touchstart', preventDefault);
+        };
+    }, [importedImage]);
+
     return (
-        <div className="camera-container" data-ratio={config.ratio}>
+        <div 
+            ref={containerRef}
+            className="camera-container" 
+            data-ratio={config.ratio}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onWheel={handleWheel}
+            style={{ touchAction: importedImage ? 'none' : 'auto', overscrollBehavior: 'none' }}
+        >
             <video ref={videoRef} style={{ display: 'none' }} playsInline muted />
             <canvas ref={canvasRef} className="pixel-canvas" />
         </div>
