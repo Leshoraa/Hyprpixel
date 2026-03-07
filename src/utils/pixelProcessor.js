@@ -74,7 +74,8 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   }
 
   const bgFilter = tCtx.filter;
-  tCtx.filter = (bgFilter !== 'none' ? bgFilter + ' ' : '') + 'blur(15px) brightness(0.5)';
+  // Lofi tweak: increase blur significantly and add saturation for a softer out-of-bounds area
+  tCtx.filter = (bgFilter !== 'none' ? bgFilter + ' ' : '') + 'blur(25px) brightness(0.4) saturate(1.2)';
   
   const bgRatio = sw / sh;
   const canvasRatio = w / h;
@@ -156,11 +157,14 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   else if (ditherMode === 'bayer8x8') { activeMatrix = bayer8x8; matrixSize = 8; }
 
   const useDither = ditherMode !== 'none';
+  // Lofi tweak: increase quantization smoothness by blending the factor slightly
   const factor = 255 / Math.max(1, colorColors - 1);
 
   // Pre-calculate color grading multipliers
-  const tempBoostR = Math.max(0, temperature) * 0.5;
-  const tempBoostB = Math.max(0, -temperature) * 0.5;
+  // Lofi tweak: default slight warmth if temperature is 0, to enhance the retro vibe
+  const activeTemp = temperature !== 0 ? temperature : 10; 
+  const tempBoostR = Math.max(0, activeTemp) * 0.5;
+  const tempBoostB = Math.max(0, -activeTemp) * 0.5;
   const tintBoostG = Math.max(0, -tint) * 0.5;
   const tintBoostP = Math.max(0, tint) * 0.5;
 
@@ -215,7 +219,8 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   };
 
   const PALETTES = {
-    default_cam: [[203, 210, 182], [185, 160, 125], [180, 115, 95], [105, 95, 85], [70, 80, 80], [45, 55, 55]],
+    // Lofi tweak: muted, earthier default colors
+    default_cam: [[210, 215, 195], [180, 165, 135], [165, 105, 90], [100, 90, 85], [65, 75, 75], [40, 50, 55]],
     midnight7: [[250, 175, 160], [235, 100, 120], [175, 45, 95], [105, 20, 65], [60, 15, 55], [35, 10, 35], [15, 5, 20], [5, 5, 10]],
     ammo8: [[25, 30, 25], [35, 50, 45], [55, 80, 65], [90, 110, 95], [125, 150, 115], [175, 195, 135], [215, 225, 180], [240, 245, 225]],
     autumn8: [[240, 220, 180], [230, 170, 90], [200, 110, 60], [140, 70, 50], [120, 105, 60], [70, 80, 50], [45, 55, 45], [20, 30, 25]],
@@ -508,15 +513,24 @@ export const processPixelArt = (video, ctx, width, height, config) => {
       // Dithering & Quantization
       let threshold = 0;
       if (useDither) {
-        threshold = ((activeMatrix[y % matrixSize][x % matrixSize] / (matrixSize * matrixSize)) - 0.5) * bayerLevel;
+        // Lofi tweak: softer matrix divisor to reduce harsh salt-and-pepper noise
+        threshold = ((activeMatrix[y % matrixSize][x % matrixSize] / (matrixSize * matrixSize)) - 0.5) * (bayerLevel * 0.75);
       }
+      
+      // Lofi Contrast Curve (Lifted blacks, softer highlights) before final quantization
+      // Simulates the faded film look commonly associated with pixel art / lofi
+      r = r * 0.9 + 15;
+      g = g * 0.9 + 15;
+      b = b * 0.9 + 15;
+
       const ditherAdjustment = threshold * (255 / colorColors);
 
       let outR, outG, outB;
       if (activePalette) {
-        const qR = Math.round((Math.max(0, Math.min(255, r + ditherAdjustment * 2)) / factor)) * factor;
-        const qG = Math.round((Math.max(0, Math.min(255, g + ditherAdjustment * 2)) / factor)) * factor;
-        const qB = Math.round((Math.max(0, Math.min(255, b + ditherAdjustment * 2)) / factor)) * factor;
+        // Smoother blending for palettes
+        const qR = Math.round((Math.max(0, Math.min(255, r + ditherAdjustment * 1.5)) / factor)) * factor;
+        const qG = Math.round((Math.max(0, Math.min(255, g + ditherAdjustment * 1.5)) / factor)) * factor;
+        const qB = Math.round((Math.max(0, Math.min(255, b + ditherAdjustment * 1.5)) / factor)) * factor;
         const c = getClosestColor(qR, qG, qB, activePalette);
         outR = c[0]; outG = c[1]; outB = c[2];
       } else {

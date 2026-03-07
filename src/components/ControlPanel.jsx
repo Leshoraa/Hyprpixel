@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CameraTab } from './tabs/CameraTab';
 import { ColorTab } from './tabs/ColorTab';
 import { LightTab } from './tabs/LightTab';
@@ -20,7 +20,13 @@ export const ControlPanel = ({
     handleImportImage,
     handleReset
 }) => {
-    const { panelPos, isDraggingPanel, handlePointerDown, handlePointerMove, handlePointerUp } = usePanelDrag(setShowControls);
+    const { panelPos, isDraggingPanel, handlePointerDown, handlePointerMove, handlePointerUp, resetPosition } = usePanelDrag(setShowControls);
+
+    useEffect(() => {
+        if (!showControls) {
+            resetPosition();
+        }
+    }, [showControls, resetPosition]);
 
     const startDragSlider = (name) => setActiveSlider(name);
     const stopDragSlider = () => setActiveSlider(null);
