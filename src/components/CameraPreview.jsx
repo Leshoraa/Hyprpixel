@@ -147,10 +147,12 @@ export const CameraPreview = ({ config, onCaptureReady, facingMode, importedImag
     useEffect(() => {
         if (onCaptureReady && canvasRef.current) {
             onCaptureReady(() => {
-                return canvasRef.current.toDataURL('image/png');
+                const mimeType = config.exportFormat === 'jpeg' ? 'image/jpeg' : (config.exportFormat === 'webp' ? 'image/webp' : 'image/png');
+                const quality = (mimeType === 'image/jpeg' || mimeType === 'image/webp') ? 0.9 : undefined;
+                return canvasRef.current.toDataURL(mimeType, quality);
             });
         }
-    }, [onCaptureReady]);
+    }, [onCaptureReady, config.exportFormat]);
 
     if (error) {
         return <div className="error-message">Error: {error}</div>;

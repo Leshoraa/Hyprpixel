@@ -3,7 +3,7 @@ export const processPixelArt = (video, ctx, width, height, config) => {
     pixelSize = 10, colorColors = 16, brightness = 1, contrast = 1, ratio = 'fullscreen', mirror = false, zoom = 1,
     panX = 0, panY = 0,
     temperature = 0, tint = 0, saturation = 1, highlights = 0, shadows = 0,
-    red = 0, green = 0, blue = 0, tintColor = '#ffffff', tintIntensity = 0,
+    red = 0, green = 0, blue = 0,
     hdr = 0, palette = 'none', ditherMode = 'bayer4x4', crt = false, scanlines = 0, filmGrain = 0, vignette = 0,
     chromaticAberration = 0, bloom = 0, edgeDetection = false, customEdgeColor = '#000000', invert = false, hueShift = 0, sepia = 0, monochrome = false, sharpen = 0,
     symmetry = 'none', nightVision = false, thermal = false, doubleExposure = 0, colorBlind = 'none', glitchMode = false, asciiMode = false, timestamp = false,
@@ -219,13 +219,14 @@ export const processPixelArt = (video, ctx, width, height, config) => {
   };
 
   const PALETTES = {
-    // Lofi tweak: muted, earthier default colors
     default_cam: [[210, 215, 195], [180, 165, 135], [165, 105, 90], [100, 90, 85], [65, 75, 75], [40, 50, 55]],
     midnight7: [[250, 175, 160], [235, 100, 120], [175, 45, 95], [105, 20, 65], [60, 15, 55], [35, 10, 35], [15, 5, 20], [5, 5, 10]],
     ammo8: [[25, 30, 25], [35, 50, 45], [55, 80, 65], [90, 110, 95], [125, 150, 115], [175, 195, 135], [215, 225, 180], [240, 245, 225]],
     autumn8: [[240, 220, 180], [230, 170, 90], [200, 110, 60], [140, 70, 50], [120, 105, 60], [70, 80, 50], [45, 55, 45], [20, 30, 25]],
     brkfst8: [[240, 235, 190], [225, 195, 130], [205, 145, 95], [175, 95, 75], [135, 65, 55], [95, 50, 45], [65, 35, 35], [35, 20, 20]],
-    dream8: [[55, 65, 185], [85, 65, 175], [125, 65, 155], [165, 75, 125], [205, 95, 105], [225, 135, 95], [235, 185, 105], [245, 225, 145]]
+    dream8: [[55, 65, 185], [85, 65, 175], [125, 65, 155], [165, 75, 125], [205, 95, 105], [225, 135, 95], [235, 185, 105], [245, 225, 145]],
+    catppuccin: [[44, 37, 35], [93, 76, 70], [140, 115, 140], [115, 140, 123], [188, 163, 202], [163, 207, 162], [233, 217, 195], [250, 246, 240]],
+    forest8: [[34, 46, 37], [62, 84, 68], [91, 122, 99], [124, 163, 134], [162, 201, 173], [203, 235, 210], [230, 247, 236], [245, 253, 249]]
   };
   let activePalette = PALETTES[palette] || null;
   if (activePalette && paletteShift > 0) {

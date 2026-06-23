@@ -22,6 +22,8 @@ export const ColorTab = ({
                     <option value="autumn8">8AUTUMN</option>
                     <option value="brkfst8">8BRKFST</option>
                     <option value="dream8">8DREAM</option>
+                    <option value="catppuccin">8CATPPUCCIN</option>
+                    <option value="forest8">8FOREST</option>
                 </select>
             </div>
 
