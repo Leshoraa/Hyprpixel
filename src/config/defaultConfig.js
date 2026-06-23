@@ -37,7 +37,7 @@ export const DEFAULT_CONFIG = {
     timer: 0,
     flashlight: false,
 
-    exportFormat: 'png',
+    exportFormat: 'jpeg',
     shutterSound: true,
     timestamp: false,
     fpsLimit: 0, // 0 means uncap
